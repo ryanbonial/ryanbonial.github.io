@@ -1,0 +1,87 @@
+<html>
+
+<head>
+  <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
+  <script src="https://api4.windy.com/assets/libBoot.js"></script>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    #windy {
+      width: 100%;
+      height: 100vh;
+    }
+
+    #windy #map_container .description-labels .leaflet-popup-pane {
+      opacity: 0.8 !important;
+    }
+
+
+    #windy .description-labels .leaflet-popup-content-wrapper,
+    #windy .description-labels .leaflet-popup-tip {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="windy"></div>
+
+  <script>
+    const locations = [
+      { lat: 40.0150, lon: -105.2705, zoom: 11, description: 'Accelerator Studio Boulder' },
+      // { lat: 34.7541, lon: -77.4302, zoom: 9, description: 'Hurricane?' },
+      { lat: 13.067439, lon: 80.237617, zoom: 6, description: 'Accelerator Studio Chennai' },
+      { lat: 9.931233, lon: 76.2673, zoom: 6, description: 'Accelerator Studio Kochi' }
+    ]
+    const options = {
+      key: '3qDxgc1Jp6snJXvFoUTelm7DmhZpOvbS',
+      lat: locations[0].lat,
+      lon: locations[0].lon,
+      zoom: locations[0].zoom
+    }
+
+    windyInit(options, windyAPI => {
+      const { store, broadcast, picker, map } = windyAPI
+      var currentLat = locations[0].lat
+      var currentLon = locations[0].lon
+      var locationIndex = 0;
+      var locationChanged = true;
+
+      var overlays = ['temp', 'clouds', 'rain', 'wind'];
+      var overlayIndex = 0;
+
+      setInterval(() => {
+        if (overlayIndex === overlays.length - 1) {
+          overlayIndex = 0;
+          locationIndex = (locationIndex === locations.length - 1 ? 0 : locationIndex + 1)
+          locationChanged = true;
+          currentLat = locations[locationIndex].lat
+          currentLon = locations[locationIndex].lon
+          map.setView([currentLat, currentLon])
+          map.setZoom(locations[locationIndex].zoom)
+        } else {
+          overlayIndex++
+        }
+        store.set('overlay', overlays[overlayIndex])
+      }, 7000)
+
+      broadcast.on('redrawFinished', params => {
+        if (locationChanged) {
+          picker.close()
+          picker.open({ lat: currentLat, lon: currentLon })
+          L.popup({ closeButton: false, className: 'description-labels' })
+            .setLatLng([currentLat, currentLon])
+            .setContent(`<big style="font-size: 16px; opacity: 1;">${locations[locationIndex].description}</big>`)
+            .openOn(map);
+          locationChanged = false;
+        }
+      })
+    })
+  </script>
+
+</body>
+
+</html>
