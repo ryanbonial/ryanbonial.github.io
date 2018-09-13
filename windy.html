@@ -43,17 +43,21 @@
     }
 
     windyInit(options, windyAPI => {
-      const { store, broadcast, picker, map } = windyAPI
+      const { store, broadcast, picker, map, overlays } = windyAPI
       var currentLat = locations[0].lat
       var currentLon = locations[0].lon
       var locationIndex = 0;
       var locationChanged = true;
 
-      var overlays = ['temp', 'clouds', 'rain', 'wind'];
+      var overlaysShown = ['temp', 'clouds', 'rain', 'wind'];
       var overlayIndex = 0;
 
+      overlays.rain.setMetric('in')
+      overlays.temp.setMetric(overlays.temp.listMetrics()[1])
+      overlays.wind.setMetric('mph')
+
       setInterval(() => {
-        if (overlayIndex === overlays.length - 1) {
+        if (overlayIndex === overlaysShown.length - 1) {
           overlayIndex = 0;
           locationIndex = (locationIndex === locations.length - 1 ? 0 : locationIndex + 1)
           locationChanged = true;
@@ -64,7 +68,7 @@
         } else {
           overlayIndex++
         }
-        store.set('overlay', overlays[overlayIndex])
+        store.set('overlay', overlaysShown[overlayIndex])
       }, 7000)
 
       broadcast.on('redrawFinished', params => {
