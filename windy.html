@@ -17,7 +17,6 @@
       opacity: 0.8;
     }
 
-
     #windy .description-labels .leaflet-popup-content-wrapper,
     #windy .description-labels .leaflet-popup-tip {
       background-color: rgba(0, 0, 0, 0.6);
@@ -34,7 +33,7 @@
       { lat: 40.0150, lon: -105.2705, zoom: 11, description: 'Accelerator Studio Boulder' },
       { lat: 13.067439, lon: 80.237617, zoom: 9, description: 'Accelerator Studio Chennai' },
       { lat: 9.931233, lon: 76.2673, zoom: 9, description: 'Accelerator Studio Kochi' },
-      { lat: 37.6647975, lon: -97.5841188, zoom: 5 }, // United States
+      { lat: 37.6647975, lon: -97.5841188, zoom: 4 }, // United States
     ]
     const options = {
       key: '3qDxgc1Jp6snJXvFoUTelm7DmhZpOvbS',
@@ -70,7 +69,7 @@
           overlayIndex++
         }
         store.set('overlay', overlaysShown[overlayIndex])
-      }, 7000)
+      }, 12000)
 
       broadcast.on('redrawFinished', params => {
         if (locationChanged) {
