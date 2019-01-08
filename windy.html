@@ -31,9 +31,12 @@
   <script>
     const locations = [
       { lat: 40.0150, lon: -105.2705, zoom: 11, description: 'Accelerator Studio Boulder' },
-      { lat: 13.067439, lon: 80.237617, zoom: 9, description: 'Accelerator Studio Chennai' },
+      { lat: 37.6647975, lon: -97.5841188, zoom: 4 }, // United States,
+      { lat: 51.5287714, lon: -0.2420227, zoom: 7, description: 'London' },
       { lat: 9.931233, lon: 76.2673, zoom: 9, description: 'Accelerator Studio Kochi' },
-      { lat: 37.6647975, lon: -97.5841188, zoom: 4 }, // United States
+      { lat: 13.067439, lon: 80.237617, zoom: 9, description: 'Accelerator Studio Chennai' },
+      { lat: 35.6735404, lon: 139.5699592, zoom: 7, description: 'Tokyo' },
+      { lat: -33.8473551, lon: 150.6511007, zoom: 6, description: 'Sydney' },
     ]
     const options = {
       key: '3qDxgc1Jp6snJXvFoUTelm7DmhZpOvbS',
@@ -44,13 +47,13 @@
 
     windyInit(options, windyAPI => {
       const { store, broadcast, picker, map, overlays } = windyAPI
-      var currentLat = locations[0].lat
-      var currentLon = locations[0].lon
-      var locationIndex = 0;
-      var locationChanged = true;
+      let currentLat = locations[0].lat
+      let currentLon = locations[0].lon
+      let locationIndex = 0;
+      let locationChanged = true;
 
-      var overlaysShown = ['temp', 'clouds', 'rain', 'wind'];
-      var overlayIndex = 0;
+      let overlaysShown = ['temp', 'clouds', 'rain', 'wind'];
+      let overlayIndex = 0;
 
       overlays.rain.setMetric('in')
       overlays.temp.setMetric(overlays.temp.listMetrics()[1])
@@ -72,17 +75,17 @@
       }, 12000)
 
       broadcast.on('redrawFinished', params => {
-        if (locationChanged) {
-          picker.close()
-          if (locations[locationIndex].description) {
-            picker.open({ lat: currentLat, lon: currentLon })
-            L.popup({ closeButton: false, className: 'description-labels' })
-              .setLatLng([currentLat, currentLon])
-              .setContent(`<big style="font-size: 16px; opacity: 1;">${locations[locationIndex].description}</big>`)
-              .openOn(map);
-          }
-          locationChanged = false;
+        if (!locationChanged) { return; }
+
+        picker.close()
+        if (locations[locationIndex].description) {
+          picker.open({ lat: currentLat, lon: currentLon })
+          L.popup({ closeButton: false, className: 'description-labels' })
+            .setLatLng([currentLat, currentLon])
+            .setContent(`<big style="font-size: 16px; opacity: 1;">${locations[locationIndex].description}</big>`)
+            .openOn(map);
         }
+        locationChanged = false;
       })
     })
   </script>
