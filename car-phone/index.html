@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Car Phone!</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+</head>
+
+<body style="background-color:darkgrey;">
+	<!-- This app works on a Samsung Galaxy S8 and has not been tested in any way on anything else -->
+	<div><img src="images/car.svg" style="transform: rotate(-90deg);position: fixed; top: 160px; left: -120px; z-index: -1;" height="48%"
+		 onclick="playSound();"></div>
+	<div id="accel-x"></div>
+	<div id="accel-y"></div>
+	<div id="accel-z"></div>
+
+	<script>
+		const startAudio = new Audio('sounds/car-ignition-2.mp3');
+		const fallAudio = new Audio('sounds/mario-whoa.wav');
+		const leftAudio = new Audio('sounds/braking.wav');
+		leftAudio.volume = 0.5;
+		const crashAudio = new Audio('sounds/car-crash.mp3');
+
+		function playSound() {
+			startAudio.play();
+		}
+
+		const checkAcceleration = _.throttle(event => {
+			if (event.acceleration.z > 4.5) {
+				document.getElementById('accel-z').innerText = `Up/Down = ${Math.ceil(event.acceleration.z)}`;
+				fallAudio.play();
+				return;
+			}
+			if (event.acceleration.y > 2.5) {
+				document.getElementById('accel-y').innerText = `Fwd/Bkwd = ${Math.ceil(event.acceleration.y)}`;
+				crashAudio.play();
+				return;
+			}
+			if (event.acceleration.x < -2 || event.acceleration.x > 2) {
+				document.getElementById('accel-x').innerText = `Left/Right = ${Math.ceil(event.acceleration.x)}`;
+				leftAudio.pause()
+				leftAudio.currentTime = 0;
+				leftAudio.play();
+				return;
+			}
+		}, 500);
+
+		window.addEventListener('devicemotion', checkAcceleration, true);
+	</script>
+</body>
+
+</html>
